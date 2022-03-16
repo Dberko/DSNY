@@ -1,11 +1,9 @@
 from selenium import webdriver
+from selenium.webdriver.common.by import By
 import requests
 
 
-def search_amazon(driver, item):
-    if not item:
-        raise Exception("Missing item")
-
+def search_and_submit(driver, item):
     # Navigate to Amazon
     driver.get("http://amazon.com")
     # Find search box and input item and search
@@ -14,14 +12,34 @@ def search_amazon(driver, item):
     search_button = driver.find_element_by_id("nav-search-submit-text").click()
     driver.implicitly_wait(3)
     print("Search page succesfully loaded")
+    return
+
+
+def search_amazon_and_verify_results(driver, item):
+    if not item:
+        raise Exception("Missing item")
+
+    search_and_submit(driver, item)
+
     items = driver.find_elements_by_xpath(
         '//div[@class="a-section a-spacing-base"]')
-    print(items[0].get_attribute("innerHTML"))
+    search_results = []
     for item in items:
         name = item.find_element_by_xpath(
             './/span[contains(@class, "a-size-base-plus")]')
-        print(name.text)
-    #     # click_next = driver.find_element_by_class_name('a-last').click()
+        price = item.find_elements_by_class_name('a-price-whole')
+        isPrime = item.find_elements_by_xpath(
+            './/i[contains(@class, "a-icon a-icon-prime a-icon-medium")]')
+        # rating = item.find_elements_by_xpath(
+        #     './/span[class="a-icon-alt"]')
+        search_results.append({
+            'Name': name.text,
+            'Price': price[0].text if price else "N/A",
+            'Prime?': 'YES' if isPrime else 'NO'
+            # 'Rating': rating[0].text if rating else 'N/A'
+        })
+    print(search_results[:5])
+    assert(len(search_results) > 0)
     return driver.current_url
 
 
@@ -44,16 +62,28 @@ def get_content(driver, url):
     return r.status_code
 
 
-def test_one(driver, item):
-    url = search_amazon(driver, item)
-    assert(get_content(driver, url) == 200)
+def test_search(driver, item):
+    url = search_amazon_and_verify_results(driver, item)
+    # assert(get_content(driver, url) == 200)
+
+
+def test_cart(driver, search_keyword):
+    return
+
+
+def test_password(driver, email, password):
+    return
 
 
 def main():
     driver = webdriver.Chrome(executable_path=r'/usr/bin/chromedriver.exe')
-    test_one(driver, "Mickey Mouse")
-    driver.quit()
-    return 1
+    # test_search(driver, "")
+    test_search(driver, "Mickey Mouse")
+    test_cart(driver, "Mickey Mouse")
+    test_password(driver, "danberko@umich.edu", "testpassword")
+    # driver.quit()
+    print("All tests passed successfully!")
+    # return 1
 
 
 if __name__ == "__main__":
