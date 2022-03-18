@@ -58,7 +58,8 @@ def scrape_search_items(items):
 
 def test_search(driver, item):
     if not item:
-        raise Exception("Missing item")
+        print("Missing item")
+        return
 
     search_and_submit(driver, item)
 
@@ -72,6 +73,9 @@ def test_search(driver, item):
 
 
 def test_cart(driver, search_keyword):
+    if not search_keyword:
+        print("Missing search_keyword")
+        return
     search_and_submit(driver, search_keyword)
     # Target first search result to add to cart (save product_name_text for verification purposes)
     product_info = driver.find_element_by_xpath(
