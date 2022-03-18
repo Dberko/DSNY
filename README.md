@@ -4,6 +4,7 @@
 ## Requirements
 1. Python3
 2. pip
+3. Chrome webdriver executable in your PATH
 
 ## How to Run
 1. Clone repository.
