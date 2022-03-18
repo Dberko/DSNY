@@ -11,6 +11,10 @@ def search_and_submit(driver, item):
         'twotabsearchtextbox').send_keys(item)
     search_button = driver.find_element_by_id("nav-search-submit-text").click()
     driver.implicitly_wait(3)
+    # Ensure we are on the results page
+    results_text = driver.find_element_by_xpath(
+        '//span[contains(@class, "a-size-medium-plus a-color-base a-text-normal")]')
+    assert(results_text.text == "RESULTS")
     print("Search page succesfully loaded")
     return
 
@@ -21,25 +25,25 @@ def search_amazon_and_verify_results(driver, item):
 
     search_and_submit(driver, item)
 
+    # Find all products by scraping for name, price, and if it offers prime shipping.
     items = driver.find_elements_by_xpath(
         '//div[@class="a-section a-spacing-base"]')
-    search_results = []
+    products = []
     for item in items:
         name = item.find_element_by_xpath(
             './/span[contains(@class, "a-size-base-plus")]')
         price = item.find_elements_by_class_name('a-price-whole')
-        isPrime = item.find_elements_by_xpath(
+        is_prime = item.find_elements_by_xpath(
             './/i[contains(@class, "a-icon a-icon-prime a-icon-medium")]')
         # rating = item.find_elements_by_xpath(
         #     './/span[class="a-icon-alt"]')
-        search_results.append({
+        products.append({
             'Name': name.text,
             'Price': price[0].text if price else "N/A",
-            'Prime?': 'YES' if isPrime else 'NO'
+            'Prime?': 'YES' if is_prime else 'NO'
             # 'Rating': rating[0].text if rating else 'N/A'
         })
-    print(search_results[:5])
-    assert(len(search_results) > 0)
+    assert(len(products) > 0)
     return driver.current_url
 
 
@@ -68,6 +72,27 @@ def test_search(driver, item):
 
 
 def test_cart(driver, search_keyword):
+    search_and_submit(driver, search_keyword)
+    # Target first search result to add to cart
+    product_info = driver.find_element_by_xpath(
+        '//a[contains(@class, "a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal")]')
+    product_link = product_info.get_attribute("href")
+    product_name_text = product_info.find_element_by_xpath('.//span').text
+    # Go to target's page and add to cart
+    driver.get(product_link)
+    driver.find_element_by_id(
+        "add-to-cart-button").click()
+    # Once we add to cart, we are sent to a smart-wagon page
+    added_to_cart_text = driver.find_element_by_xpath(
+        '//span[contains(@class, "a-size-medium-plus a-color-base sw-atc-text a-text-bold")]')
+    assert(added_to_cart_text.text == "Added to Cart")
+
+    # Let's go to cart and verify the correct product was added
+    driver.find_element_by_id("sw-gtc").click()
+    item_in_cart = driver.find_element_by_xpath(
+        './/span[contains(@class, "a-size-medium a-color-base sc-product-title")]')
+    item_name = item_in_cart.find_element(By.CLASS_NAME, 'a-truncate-cut')
+    assert(item_name.text[:-2] in product_name_text)
     return
 
 
@@ -78,12 +103,11 @@ def test_password(driver, email, password):
 def main():
     driver = webdriver.Chrome(executable_path=r'/usr/bin/chromedriver.exe')
     # test_search(driver, "")
-    test_search(driver, "Mickey Mouse")
-    test_cart(driver, "Mickey Mouse")
+    # test_search(driver, "Mickey Mouse")
+    # test_cart(driver, "Mickey Mouse")
     test_password(driver, "danberko@umich.edu", "testpassword")
     # driver.quit()
     print("All tests passed successfully!")
-    # return 1
 
 
 if __name__ == "__main__":
