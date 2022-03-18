@@ -1,5 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
 import requests
 
 
@@ -97,6 +98,11 @@ def test_cart(driver, search_keyword):
 
 
 def test_password(driver, email, password):
+    # Navigate to Amazon
+    driver.get("http://amazon.com")
+    sign_in_nav = driver.find_element(By.ID, 'nav-link-accountList')
+    ActionChains(driver).move_to_element(sign_in_nav).perform()
+
     return
 
 
