@@ -1,3 +1,12 @@
+# Draw a decision tree:
+#      1           2         3
+#   2  3  4      3 4 5     4 5 6
+# 3 4 5
+# Say n == 3. The number of paths to 3 represents the number of distinct ways that the bunny can hop to reach 3 steps. res = 4.
+# Notice the overlapping sub-problems. Why compute the sub tree for 2 twice? Use DP.
+# dp[i], distinct number of ways to reach the ith step
+# dp[i] = dp[i - 1] + dp[i - 2] + dp[i - 3]
+
 def bunnyHops(n):
     if n < 0:
         return -1
