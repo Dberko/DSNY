@@ -65,7 +65,7 @@ def test_search(driver, item):
     # Find all products by scraping for name, price, and if it offers prime shipping.
     items = driver.find_elements_by_xpath(
         '//div[@class="a-section a-spacing-base"]')
-    products = scrape_search_items(items)
+    products = scrape_search_items(items[:10])
     assert(len(products) > 5)
     # assert(get_content(url) == 200)
     return
@@ -130,7 +130,6 @@ def main():
     test_search(driver, "Mickey Mouse doll")
     test_search(driver, "Finding Nemo cat toy")
     test_cart(driver, "Mickey Mouse")
-    test_cart(driver, "Buzz Lightyear blanket")
     test_password(driver, "mickey@disney.com", "testpassword")
     test_password(driver, "mickey@disney.com", "dory123!")
     driver.quit()
