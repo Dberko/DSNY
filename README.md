@@ -1,3 +1,2 @@
 # Disney Take Home Coding Challenge
-- Python3, Selenium
-- 
+- Using Python3 and Selenium
