@@ -7,6 +7,7 @@
 # dp[i], distinct number of ways to reach the ith step
 # Base Case: n == 0: 0, n == 1: 1, n == 2: 2, n == 3: 4
 # Recursive Case: dp[i] = dp[i - 1] + dp[i - 2] + dp[i - 3]
+# Time: O(n), Space: O(n)
 
 def bunnyHops(n):
     if n < 0:
