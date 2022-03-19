@@ -1,7 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
-import requests
+from selenium.webdriver.chrome.options import Options
 
 
 def search_and_submit(driver, item):
@@ -19,25 +19,6 @@ def search_and_submit(driver, item):
     assert(results_text.text == "RESULTS")
     print("Search page succesfully loaded")
     return
-
-
-def get_content(url):
-    print("URL: ", url)
-    headers = {
-        'dnt': '1',
-        'upgrade-insecure-requests': '1',
-        'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.61 Safari/537.36',
-        'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-        'sec-fetch-site': 'same-origin',
-        'sec-fetch-mode': 'navigate',
-        'sec-fetch-user': '?1',
-        'sec-fetch-dest': 'document',
-        'referer': 'https://www.amazon.com/',
-        'accept-language': 'en-GB,en-US;q=0.9,en;q=0.8',
-    }
-    r = requests.get(url, headers=headers)
-    print(r)
-    return r.status_code
 
 
 def scrape_search_items(items):
@@ -68,7 +49,6 @@ def test_search(driver, item):
         '//div[@class="a-section a-spacing-base"]')
     products = scrape_search_items(items[:10])
     assert(len(products) > 5)
-    # assert(get_content(url) == 200)
     return
 
 
@@ -129,8 +109,8 @@ def test_password(driver, email="mickey@disney.com", password="hunter123"):
 
 
 def main():
-    driver = webdriver.Chrome(executable_path=r'/usr/bin/chromedriver.exe')
-    # test_search(driver, "")
+    driver = webdriver.Chrome(
+        executable_path=r'/usr/bin/chromedriver')
     test_search(driver, "Mickey Mouse doll")
     test_search(driver, "Finding Nemo cat toy")
     test_cart(driver, "Mickey Mouse")
