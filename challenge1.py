@@ -104,6 +104,7 @@ def test_password(driver, email="mickey@disney.com", password="hunter123"):
     auth_error_message = auth_error.find_element(By.CLASS_NAME, 'a-list-item')
     assert("password" in auth_error_message.text)
     assert("incorrect" in auth_error_message.text)
+    assert("Your password is incorrect" == auth_error_message.text)
     print(auth_error_message.text)
     return
 
