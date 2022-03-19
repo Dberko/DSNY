@@ -43,7 +43,6 @@ def bunnyHops(n):
         for i in range(4, n + 1):
             dp[i] = dp[i - 1] + dp[i - 2] + dp[i - 3]
         return dp[-1]
-
     return bottomUp()
 
 
@@ -56,6 +55,7 @@ def main():
     assert(bunnyHops(4) == 7)
     assert(bunnyHops(5) == 13)
     assert(bunnyHops(6) == 24)
+    assert(bunnyHops(10) == 274)
     return
 
 
